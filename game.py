@@ -66,8 +66,8 @@ class Game:
     def show_go_screen(self):
         self.screen.blit(self.graphics_provider.background, self.graphics_provider.background_rect)
         self.draw_text(self.screen, self.settings.application_name, 64, self.settings.WIDTH / 2, self.settings.HEIGHT / 4)
-        self.draw_text(self.screen, "Arrow keys move, Space to fire", 22, self.settings.WIDTH / 2, self.settings.HEIGHT / 2)
-        self.draw_text(self.screen, "Press a key to begin", 18, self.settings.WIDTH / 2, self.settings.HEIGHT * 3 / 4)
+        self.draw_text(self.screen, "Use Arrow keys move, Space to fire", 22, self.settings.WIDTH / 2, self.settings.HEIGHT / 2)
+        self.draw_text(self.screen, "Press any key to begin", 18, self.settings.WIDTH / 2, self.settings.HEIGHT * 3 / 4)
         pygame.display.flip()
         waiting = True
         
@@ -121,7 +121,7 @@ class Game:
             for hit in hits:
                 score += 50 - hit.radius
                 random.choice(self.sound_provider.expl_sounds).play()
-                expl = Explosion(hit.rect.center, 'lg', self.graphics_provider)
+                expl = Explosion(hit.rect.center, 'large', self.graphics_provider)
                 self.all_sprites.add(expl)
                 if random.random() > 0.9:
                     powerup = Powerup(hit.rect.center, self.settings, self.graphics_provider)
@@ -133,7 +133,7 @@ class Game:
             hits = pygame.sprite.spritecollide(self.player, self.mobs, True, pygame.sprite.collide_circle)
             for hit in hits:
                 self.player.shield -= hit.radius * 2
-                expl = Explosion(hit.rect.center, 'sm', self.graphics_provider)
+                expl = Explosion(hit.rect.center, 'small', self.graphics_provider)
                 self.all_sprites.add(expl)
                 self.newmob()
                 if self.player.shield <= 0:
