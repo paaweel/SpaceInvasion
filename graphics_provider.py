@@ -15,6 +15,7 @@ class GraphicsProvider():
         self.background = pygame.image.load(path.join(self.img_dir, "starfield.png")).convert()
         self.background_rect = self.background.get_rect()
         self.player_img = pygame.image.load(path.join(self.img_dir, "playerShip.png")).convert()
+        self.enemy_img = pygame.image.load(path.join(self.img_dir, "enemyShip.png")).convert()
         self.player_mini_img = pygame.transform.scale(self.player_img, (25, 19))
         self.player_mini_img.set_colorkey(self.settings.colors.black)
         self.bullet_img = pygame.image.load(path.join(self.img_dir, "laserRed16.png")).convert()

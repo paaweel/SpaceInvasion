@@ -12,6 +12,7 @@ from player import Player
 from bullet import Bullet
 from explosion import Explosion
 from powerup import Powerup
+from enemy import Enemy
 
 
 class Game:
@@ -41,10 +42,15 @@ class Game:
         text_rect.midtop = (x, y)
         surf.blit(text_surface, text_rect)
 
-    def newmob(self):
-        m = Mob(self.settings, self.graphics_provider)
-        self.all_sprites.add(m)
-        self.mobs.add(m)
+    def new_mob(self):
+        mob = Mob(self.settings, self.graphics_provider)
+        self.all_sprites.add(mob)
+        self.mobs.add(mob)
+
+    def new_enemy(self):
+        enemy = Enemy(self.settings, self.graphics_provider)
+        self.all_sprites.add(enemy)
+        self.enemies.add(enemy)
 
     def draw_shield_bar(self, surf, x, y, pct):
         if pct < 0:
@@ -89,6 +95,7 @@ class Game:
                 game_over = False
                 self.all_sprites = pygame.sprite.Group()
                 self.mobs = pygame.sprite.Group()
+                self.enemies = pygame.sprite.Group()
                 self.bullets = pygame.sprite.Group()
                 self.powerups = pygame.sprite.Group()
 
@@ -101,7 +108,10 @@ class Game:
 
                 self.all_sprites.add(self.player)
                 for i in range(8):
-                    self.newmob()
+                    self.new_mob()
+
+                for i in range(3):
+                    self.new_enemy()
                 
                 score = 0
 
@@ -127,7 +137,20 @@ class Game:
                     powerup = Powerup(hit.rect.center, self.settings, self.graphics_provider)
                     self.all_sprites.add(powerup)
                     self.powerups.add(powerup)
-                self.newmob()
+                self.new_mob()
+
+            # check to see if a bullet hit an enemy
+            hits = pygame.sprite.groupcollide(self.enemies, self.bullets, True, True)
+            for hit in hits:
+                score += 50 - hit.radius
+                random.choice(self.sound_provider.expl_sounds).play()
+                expl = Explosion(hit.rect.center, 'large', self.graphics_provider)
+                self.all_sprites.add(expl)
+                if random.random() > 0.9:
+                    powerup = Powerup(hit.rect.center, self.settings, self.graphics_provider)
+                    self.all_sprites.add(powerup)
+                    self.powerups.add(powerup)
+                self.new_enemy()
 
             # check to see if a mob hit the player  
             hits = pygame.sprite.spritecollide(self.player, self.mobs, True, pygame.sprite.collide_circle)
@@ -135,7 +158,7 @@ class Game:
                 self.player.shield -= hit.radius * 2
                 expl = Explosion(hit.rect.center, 'small', self.graphics_provider)
                 self.all_sprites.add(expl)
-                self.newmob()
+                self.new_mob()
                 if self.player.shield <= 0:
                     self.sound_provider.player_die_sound.play()
                     death_explosion = Explosion(self.player.rect.center, 'player', self.graphics_provider)
@@ -169,14 +192,6 @@ class Game:
             self.draw_lives(self.screen, self.settings.WIDTH - 100, 5, self.player.lives, self.graphics_provider.player_mini_img)
             # *after* drawing everything, flip the display
             pygame.display.flip()
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
